@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التداول الآلي - تسجيل الدخول</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .form-toggle {
+            display: flex;
+            margin-bottom: 30px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            border-color: #00b894;
+            color: #00b894;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00b894;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #00b894;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #00cec9;
+        }
+
+        .verification-section {
+            display: none;
+        }
+
+        .error-message {
+            color: #ff7675;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .terms {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 20px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="form-toggle">
+            <button class="toggle-btn active" onclick="showForm('login')">تسجيل الدخول</button>
+            <button class="toggle-btn" onclick="showForm('signup')">إنشاء حساب</button>
+        </div>
+
+        <!-- تسجيل الدخول -->
+        <form id="loginForm" class="auth-form active" onsubmit="return login(event)">
+            <div class="form-group">
+                <input type="email" placeholder="البريد الإلكتروني" required>
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="كلمة المرور" required>
+            </div>
+            <button type="submit">الدخول</button>
+            <div class="error-message" id="loginError"></div>
+        </form>
+
+        <!-- تسجيل جديد -->
+        <form id="signupForm" class="auth-form" onsubmit="return signup(event)">
+            <div class="form-group">
+                <input type="text" placeholder="الاسم الكامل" required>
+            </div>
+            <div class="form-group">
+                <input type="email" placeholder="البريد الإلكتروني" required>
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="كلمة المرور" required>
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="تأكيد كلمة المرور" required>
+            </div>
+            <button type="submit">إنشاء حساب</button>
+            <div class="error-message" id="signupError"></div>
+        </form>
+
+        <!-- توثيق الحساب -->
+        <div class="verification-section" id="verificationSection">
+            <h3>تم إرسال رمز التحقق إلى بريدك الإلكتروني</h3>
+            <div class="form-group">
+                <input type="text" placeholder="أدخل رمز التحقق" id="verificationCode">
+            </div>
+            <button onclick="verifyAccount()">تأكيد الحساب</button>
+            <div class="error-message" id="verifyError"></div>
+        </div>
+
+        <p class="terms">بالنقر على "إنشاء حساب" فإنك توافق على شروط الخدمة وسياسة الخصوصية</p>
+    </div>
+
+    <script>
+        // تبديل النماذج
+        function showForm(formType) {
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            
+            if(formType === 'login') {
+                document.querySelector('[onclick="showForm(\'login\')"]').classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.querySelector('[onclick="showForm(\'signup\')"]').classList.add('active');
+                document.getElementById('signupForm').classList.add('active');
+            }
+        }
+
+        // عملية التسجيل
+        function signup(e) {
+            e.preventDefault();
+            const password = document.querySelector('#signupForm input[type="password"]:nth-of-type(1)').value;
+            const confirmPassword = document.querySelector('#signupForm input[type="password"]:nth-of-type(2)').value;
+
+            if(password !== confirmPassword) {
+                showError('signupError', 'كلمة المرور غير متطابقة');
+                return false;
+            }
+
+            // هنا يتم إرسال البيانات للخادم
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('verificationSection').style.display = 'block';
+            return false;
+        }
+
+        // عملية التحقق
+        function verifyAccount() {
+            const code = document.getElementById('verificationCode').value;
+            
+            if(code.length !== 6) {
+                showError('verifyError', 'رمز التحقق غير صحيح');
+                return;
+            }
+
+            // هنا يتم التحقق من الرمز
+            alert('تم التحقق بنجاح! يمكنك الآن تسجيل الدخول.');
+            window.location.href = 'login.html';
+        }
+
+        // عملية الدخول
+        function login(e) {
+            e.preventDefault();
+            // هنا عملية التحقق من بيانات الدخول
+            alert('تم الدخول بنجاح!');
+            return false;
+        }
+
+        // إظهار الأخطاء
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => errorElement.style.display = 'none', 3000);
+        }
+    </script>
+</body>
+</html>

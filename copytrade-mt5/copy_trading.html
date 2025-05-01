@@ -1,0 +1,132 @@
+<!-- ملف: copy_trading.html -->
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>نسخ الصفقات - MT5</title>
+    <style>
+        /* التنسيقات السابقة مع إضافة */
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .trade-log {
+            background: #1e293b;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="robot-container">
+        <h2>نسخ الصفقات التلقائي</h2>
+        
+        <div class="accounts-grid">
+            <!-- الحساب المصدر -->
+            <div class="mt5-credentials">
+                <h3>الحساب المصدر</h3>
+                <input type="number" id="sourceAccount" placeholder="رقم الحساب">
+                <input type="password" id="sourcePassword" placeholder="كلمة المرور">
+                <input type="text" id="sourceServer" placeholder="السيرفر">
+            </div>
+
+            <!-- الحسابات الهدف -->
+            <div class="mt5-credentials">
+                <h3>الحسابات الهدف</h3>
+                <div id="destAccounts">
+                    <div class="account">
+                        <input type="number" placeholder="رقم الحساب">
+                        <input type="password" placeholder="كلمة المرور">
+                        <input type="text" placeholder="السيرفر">
+                    </div>
+                </div>
+                <button onclick="addAccount()">إضافة حساب</button>
+            </div>
+        </div>
+
+        <div class="copy-settings">
+            <h3>إعدادات النسخ</h3>
+            <label>
+                <input type="checkbox" id="copySLTP"> نسخ أوامر الوقف والهدف
+            </label>
+            <label>
+                حجم المضاعفة: <input type="number" id="volumeMultiplier" value="1" step="0.1">
+            </label>
+        </div>
+
+        <div class="trade-log" id="tradeLog">
+            <!-- سجل الصفقات -->
+        </div>
+
+        <button onclick="startCopying()">بدء النسخ</button>
+        <button onclick="stopCopying()">إيقاف النسخ</button>
+    </div>
+
+    <script>
+        let isCopying = false;
+        
+        function addAccount() {
+            const div = document.createElement('div');
+            div.className = 'account';
+            div.innerHTML = `
+                <input type="number" placeholder="رقم الحساب">
+                <input type="password" placeholder="كلمة المرور">
+                <input type="text" placeholder="السيرفر">
+            `;
+            document.getElementById('destAccounts').appendChild(div);
+        }
+
+        async function startCopying() {
+            isCopying = true;
+            while(isCopying) {
+                try {
+                    const response = await fetch('/copy-trades', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(getSettings())
+                    });
+                    
+                    const result = await response.json();
+                    updateLog(result);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+                await new Promise(r => setTimeout(r, 5000));
+            }
+        }
+
+        function stopCopying() {
+            isCopying = false;
+        }
+
+        function getSettings() {
+            return {
+                source: {
+                    account: document.getElementById('sourceAccount').value,
+                    password: document.getElementById('sourcePassword').value,
+                    server: document.getElementById('sourceServer').value
+                },
+                destinations: Array.from(document.querySelectorAll('.account')).map(acc => ({
+                    account: acc.children[0].value,
+                    password: acc.children[1].value,
+                    server: acc.children[2].value
+                })),
+                settings: {
+                    copySLTP: document.getElementById('copySLTP').checked,
+                    multiplier: document.getElementById('volumeMultiplier').value
+                }
+            }
+        }
+
+        function updateLog(entry) {
+            const log = document.getElementById('tradeLog');
+            log.innerHTML += `<div>[${new Date().toLocaleString()}] ${entry.message}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+    </script>
+</body>
+</html>

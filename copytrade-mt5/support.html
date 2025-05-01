@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدعم الفني - التداول الآلي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .support-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* قسم الاتصال المباشر */
+        .contact-section {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }
+
+        .contact-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: #2d3748;
+            border: 1px solid #334155;
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        /* قسم الأسئلة الشائعة */
+        .faq-section {
+            margin: 40px 0;
+        }
+
+        .faq-item {
+            background: #1e293b;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 15px;
+            background: #00b894;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            padding: 15px;
+            display: none;
+        }
+
+        /* دليل المستخدم */
+        .guide-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .guide-card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .guide-card img {
+            width: 60px;
+            margin-bottom: 15px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #00b894;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .contact-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="support-container">
+        <!-- الاتصال المباشر -->
+        <section class="contact-section">
+            <h2>الاتصال المباشر</h2>
+            <form class="contact-form">
+                <div class="form-group">
+                    <input type="text" placeholder="الاسم الكامل" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" placeholder="البريد الإلكتروني" required>
+                </div>
+                <div class="form-group full-width">
+                    <textarea rows="5" placeholder="رسالتك..." required></textarea>
+                </div>
+                <button type="submit" class="download-btn">إرسال الرسالة</button>
+            </form>
+        </section>
+
+        <!-- الأسئلة الشائعة -->
+        <section class="faq-section">
+            <h2>الأسئلة الشائعة</h2>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>كيف أبدأ في التداول الآلي؟</span>
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>1. أنشئ حساب جديد<br>2. اربط حساب التداول<br>3. اختر الإستراتيجية المفضلة</p>
+                </div>
+            </div>
+            <!-- يمكن إضافة المزيد من الأسئلة -->
+        </section>
+
+        <!-- دليل المستخدم -->
+        <section class="guide-section">
+            <div class="guide-card">
+                <img src="pdf-icon.png" alt="دليل البداية">
+                <h3>دليل البدء السريع</h3>
+                <a href="#" class="download-btn">تحميل PDF</a>
+            </div>
+            <div class="guide-card">
+                <img src="video-icon.png" alt="فيديوهات تعليمية">
+                <h3>الفيديوهات التعليمية</h3>
+                <a href="#" class="download-btn">مشاهدة</a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // تفعيل الأسئلة الشائعة
+        document.querySelectorAll('.faq-question').forEach(item => {
+            item.addEventListener('click', () => {
+                const answer = item.nextElementSibling;
+                answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+            });
+        });
+
+        // معالجة إرسال النموذج
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('تم استلام رسالتك، سنرد في أقرب وقت');
+            e.target.reset();
+        });
+    </script>
+</body>
+</html>

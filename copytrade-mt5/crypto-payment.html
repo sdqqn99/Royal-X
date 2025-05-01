@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دفع USDT - التداول الآلي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #00b894;
+            margin-bottom: 30px;
+        }
+
+        .qr-code {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px auto;
+            width: 200px;
+            height: 200px;
+        }
+
+        .wallet-address {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .wallet-address:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00b894;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .payment-steps {
+            text-align: right;
+            margin: 20px 0;
+        }
+
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            border-right: 3px solid #00b894;
+        }
+
+        button {
+            background: #00b894;
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #00cec9;
+            transform: translateY(-2px);
+        }
+
+        .confirmation {
+            display: none;
+            color: #00b894;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .payment-container {
+                padding: 20px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="payment-container">
+        <h2>الدفع باستخدام USDT</h2>
+        
+        <div class="payment-steps">
+            <div class="step">1. افتح محفظتك المشفرة</div>
+            <div class="step">2. امسح QR Code أو انسخ العنوان</div>
+            <div class="step">3. تأكد من الشبكة (TRC20)</div>
+            <div class="step">4. أرسل المبلغ المطلوب</div>
+        </div>
+
+        <div id="qrcode" class="qr-code"></div>
+
+        <div class="wallet-address" onclick="copyAddress()">
+            <div>عنوان المحفظة:</div>
+            <div id="wallet">TXYZv1...9a7B (مثال)</div>
+        </div>
+
+        <button onclick="confirmPayment()">أكملت الدفع</button>
+        <div class="confirmation" id="confirmationMsg">✓ تم استلام تأكيد الدفع</div>
+
+        <div class="copy-notification" id="copyNotification">تم النسخ!</div>
+    </div>
+
+    <script>
+        // إعداد بيانات الدفع
+        const walletAddress = 'TYzre56HjKl09XwVtR3Bn7a8sLpQmNvBcA';
+        const network = 'TRC20';
+        
+        // إنشاء QR Code
+        new QRCode(document.getElementById("qrcode"), {
+            text: `usdt:${walletAddress}?network=${network}`,
+            width: 160,
+            height: 160,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+
+        // نسخ العنوان
+        function copyAddress() {
+            navigator.clipboard.writeText(walletAddress);
+            showNotification('copyNotification');
+        }
+
+        // تأكيد الدفع
+        function confirmPayment() {
+            const confirmation = prompt("أدخل رقم المعاملة (TxHash):");
+            if (confirmation && confirmation.length === 64) {
+                document.getElementById('confirmationMsg').style.display = 'block';
+                // هنا يتم إرسل البيانات للخادم للتحقق
+                setTimeout(() => {
+                    alert('تم التحقق من الدفع بنجاح!');
+                }, 2000);
+            } else {
+                alert('رقم المعاملة غير صحيح');
+            }
+        }
+
+        // عرض الإشعارات
+        function showNotification(elementId) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

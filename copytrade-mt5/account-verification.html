@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توثيق الحساب - التداول الآلي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .verification-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00b894;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            margin-top: 5px;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #00b894;
+        }
+
+        .file-upload {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #00b894;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #00cec9;
+        }
+
+        .error-message {
+            color: #ff7675;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .verification-container {
+                padding: 20px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet>
+</head>
+<body>
+    <div class="verification-container">
+        <h2>توثيق الحساب</h2>
+        <form id="verificationForm" onsubmit="return submitVerification(event)">
+            <!-- الدولة -->
+            <div class="form-group">
+                <label>البلد</label>
+                <select id="country" required>
+                    <option value="">اختر الدولة</option>
+                    <option value="SA">السعودية</option>
+                    <option value="AE">الإمارات</option>
+                    <option value="KW">الكويت</option>
+                    <option value="QA">قطر</option>
+                </select>
+                <div class="error-message" id="countryError"></div>
+            </div>
+
+            <!-- الهوية الوطنية -->
+              <!-- إثبات السكن -->
+              <div class="form-group">
+                <label>الهوية الوطنية</label>
+                <div class="file-upload" onclick="document.getElementById('residenceProof').click()">
+                    <span>انقر لرفع الملف (PDF, JPEG, PNG)</span>
+                    <input type="file" id="residenceProof" 
+                           accept=".pdf,.jpg,.jpeg,.png" 
+                           hidden 
+                           required>
+                </div>
+                <div id="fileName"></div>
+                <div class="error-message" id="fileError"></div>
+            </div>
+
+               <!-- إثبات السكن -->
+               <div class="form-group">
+                <label>إثبات السكن (فاتورة كهرباء أو ماء)</label>
+                <div class="file-upload" onclick="document.getElementById('residenceProof').click()">
+                    <span>انقر لرفع الملف (PDF, JPEG, PNG)</span>
+                    <input type="file" id="residenceProof" 
+                           accept=".pdf,.jpg,.jpeg,.png" 
+                           hidden 
+                           required>
+                </div>
+                <div id="fileName"></div>
+                <div class="error-message" id="fileError"></div>
+            </div>
+
+            <!-- معلومات إضافية -->
+            <div class="form-group">
+                <label>معلومات إضافية (اختياري)</label>
+                <textarea id="additionalInfo" rows="3"></textarea>
+            </div>
+
+            <button type="submit">إرسال للتحقق</button>
+        </form>
+    </div>
+
+    <script>
+        // عرض اسم الملف المرفوع
+        document.getElementById('residenceProof').addEventListener('change', function(e) {
+            document.getElementById('fileName').textContent = e.target.files[0].name;
+        });
+
+        // التحقق من البيانات
+        function submitVerification(e) {
+            e.preventDefault();
+            let isValid = true;
+
+            // التحقق من الدولة
+            const country = document.getElementById('country').value;
+            if (!country) {
+                showError('countryError', 'يجب اختيار الدولة');
+                isValid = false;
+            }
+
+            // التحقق من الهوية
+            const nationalId = document.getElementById('nationalId').value;
+            if (nationalId.length !== 10 || !/^\d+$/.test(nationalId)) {
+                showError('idError', 'رقم الهوية غير صحيح');
+                isValid = false;
+            }
+
+            // التحقق من الملف
+            const file = document.getElementById('residenceProof').files[0];
+            if (!file) {
+                showError('fileError', 'يجب رفع ملف إثبات السكن');
+                isValid = false;
+            } else {
+                const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+                if (!allowedTypes.includes(file.type)) {
+                    showError('fileError', 'نوع الملف غير مدعوم');
+                    isValid = false;
+                }
+            }
+
+            if (isValid) {
+                // هنا يتم إرسال البيانات للخادم
+                alert('تم استلام بياناتك بنجاح، جاري المراجعة');
+                document.getElementById('verificationForm').reset();
+                document.getElementById('fileName').textContent = '';
+            }
+            
+            return false;
+        }
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => errorElement.style.display = 'none', 3000);
+        }
+    </script>
+</body>
+</html>
